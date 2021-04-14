@@ -14,7 +14,8 @@ E_ID_2 [a-zA-Z][a-zA-Z0-9_]*[_]
 
 %%
 
-"$$"[^\n]*"\n"  curLine++; currPos = 1; 
+
+"##"[^\n]*"\n"  curLine++; currPos = 1; 
 
 function    {printf("FUNCTION\n"); currPos += yyleng;}
 beginparams {printf("BEGIN_PARAMS\n"); currPos += yyleng;}
@@ -62,6 +63,7 @@ return      {printf("RETURN\n"); currPos += yyleng;}
 
 {DIGIT}+    {printf("NUMBER %s\n", yytext); currPos += yyleng;}
 {ID}        {printf("IDENT %s\n", yytext);  currPos+= yyleng;}
+{CHAR}      {printf("IDENT %s\n", yytext);  currPos+= yyleng;} /* for chars */
 
 ";"         {printf("SEMICOLON\n"); currPos += yyleng; }
 ":"         {printf("COLON\n"); currPos += yyleng; }
@@ -73,8 +75,8 @@ return      {printf("RETURN\n"); currPos += yyleng;}
 ":="        {printf("ASSIGN\n"); currPos += yyleng; }
 
 
-[ \t]+  {/* ignore spaces*/ currPos+=yyleng;}
-"\n"    {curLine++; currPos=1;}
+[ \t]+  {/* ignore spaces and comments*/ currPos+=yyleng;}
+"\n" {curLine++; currPos=1;}
 . {printf("ERROR at line %d, column  %d; unrecognized symbol \"%s\"\n",curLine, currPos, yytext); exit(0);}
 %%
 
@@ -92,10 +94,12 @@ int main(int argc, char** argv){
         }
         yylex();
 
+    /*
 	printf("# Integers: %d\n", numIntegers);
 	printf("# Operators: %d\n", numOperators);
 	printf("# Parentheses: %d\n", numParens);
 	printf("# Equal Sign: %d\n", numEquals);
+    */
 
 }
 
