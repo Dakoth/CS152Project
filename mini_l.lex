@@ -77,7 +77,12 @@ return      {printf("RETURN\n"); currPos += yyleng;}
 
 [ \t]+  {/* ignore spaces and comments*/ currPos+=yyleng;}
 "\n" {curLine++; currPos=1;}
-. {printf("ERROR at line %d, column  %d; unrecognized symbol \"%s\"\n",curLine, currPos, yytext); exit(0);}
+
+{E_ID_1} {printf("Error at line %d, column  %d: identifier, \"%s\" must begin with a letter\n",curLine, currPos, yytext); exit(0);}
+
+{E_ID_2} {printf("Error at line %d, column  %d: identifier, \"%s\" cannot end with an underscore\n",curLine, currPos, yytext); exit(0);}
+
+. {printf("Error at line %d, column  %d; unrecognized symbol \"%s\"\n",curLine, currPos, yytext); exit(0);}
 %%
 
 int main(int argc, char** argv){
