@@ -1,9 +1,9 @@
+/*
+    By Alfredo Gonzalez and Tommy Chhur 
+*/
+
 %{
-    int curLine=1, currPos=1;
-	int numIntegers = 0;
-	int numOperators = 0;
-	int numParens = 0;
-	int numEquals = 0;
+    int curLine=1, currPos=0;
 %}
 
 DIGIT [0-9]
@@ -15,7 +15,7 @@ E_ID_2 [a-zA-Z][a-zA-Z0-9_]*[_]
 %%
 
 
-"##"[^\n]*"\n"  curLine++; currPos = 1; 
+"##"[^\n]*"\n"  curLine++; currPos= 0; 
 
 function    {printf("FUNCTION\n"); currPos += yyleng;}
 beginparams {printf("BEGIN_PARAMS\n"); currPos += yyleng;}
@@ -76,7 +76,7 @@ return      {printf("RETURN\n"); currPos += yyleng;}
 
 
 [ \t]+  {/* ignore spaces and comments*/ currPos+=yyleng;}
-"\n" {curLine++; currPos=1;}
+"\n" {curLine++; currPos=0;}
 
 {E_ID_1} {printf("Error at line %d, column  %d: identifier, \"%s\" must begin with a letter\n",curLine, currPos, yytext); exit(0);}
 
@@ -98,13 +98,6 @@ int main(int argc, char** argv){
         yyin=stdin;
         }
         yylex();
-
-    /*
-	printf("# Integers: %d\n", numIntegers);
-	printf("# Operators: %d\n", numOperators);
-	printf("# Parentheses: %d\n", numParens);
-	printf("# Equal Sign: %d\n", numEquals);
-    */
 
 }
 

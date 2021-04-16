@@ -6,7 +6,7 @@
 ##  (not prime), and a[k] = 0 if k is not divisible by the divisors considered
 ##  thus far.
 ## 
-##  Requires a specified integer n as input, assumed to be < 1000.
+##  Requires a specified integer n as input, assumed to be < 1000. 
 
 function main;
 beginparams
