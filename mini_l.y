@@ -48,11 +48,11 @@ function:   FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS
             END_BODY {printf("function -> ...\n");}
             ;
 
-declarations:  declaration SEMICOLON declarations {printf("declarations -> declaration; declarations\n");}
-                | declaration SERMICOLON {printf("declarations -> declaration;\n");}
+declarations:  /*empty*/ {printf("declarations -> epsilon\n");}
+                | declaration SERMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations\n");}
                 ;
 
-declaration: identifiers COLON INTEGER {printf("declarations -> identifiers : integer\n");}
-            | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {printf("declarations -> identifiers : array [number] of integer\n");}
-            | identifiers COLON ENUM L_PAREN identifiers R_PAREN {printf("declarations -> identifiers : enum (identifiers)\n");}
+declaration: identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
+            | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {printf("declaration -> identifiers : array [number] of integer\n");}
+            | /*identifiers COLON ENUM L_PAREN identifiers R_PAREN {printf("declarations -> identifiers : enum (identifiers)\n");} */
             ;
