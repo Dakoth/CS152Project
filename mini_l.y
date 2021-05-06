@@ -37,3 +37,13 @@ L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN
 
 %%
 
+prog_start: functions { printf("prog_start -> funtions\n");}
+
+functions: /*empty*/{printf("functions -> epsilon\n");}
+    | function functions {printf("functions -> function functions\n");}
+    ;
+
+function:   FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS 
+            BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements 
+            END_BODY {printf("function -> ...\n");}
+

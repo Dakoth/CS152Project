@@ -77,7 +77,7 @@ return      {return RETURN; currPos += yyleng;}
 ":="        {return ASSIGN; currPos += yyleng; }
 
 
-[ \t]+  {/* ignore spaces and comments*/ currPos+=yyleng;}
+[ \t]+  {/* ignore spaces and comments*/ currPos += yyleng;}
 "\n" {curLine++; currPos=0;}
 
 {E_ID_1} {printf("Error at line %d, column  %d: identifier, \"%s\" must begin with a letter\n",curLine, currPos, yytext); exit(0);}
@@ -90,16 +90,17 @@ return      {return RETURN; currPos += yyleng;}
 int main(int argc, char** argv){
         if(argc>=2)
         {
-        yyin=fopen(argv[1], "r");
-        if(yyin==NULL){
-        yyin=stdin;
-        }
+            yyin=fopen(argv[1], "r");
+            if(yyin==NULL){
+                yyin=stdin;
+            }
         }
         else
         {
         yyin=stdin;
         }
         yylex();
+        return 0;
 
 }
 
