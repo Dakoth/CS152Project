@@ -43,7 +43,7 @@ write       {return WRITE; currPos += yyleng;}
 and         {return AND; currPos += yyleng;}
 or          {return OR; currPos += yyleng;}
 not         {return NOT; currPos += yyleng;}
-true        {reutrn TRUE; currPos += yyleng;}
+true        {return TRUE; currPos += yyleng;}
 false       {return FALSE; currPos += yyleng;}
 return      {return RETURN; currPos += yyleng;}
 
@@ -63,9 +63,9 @@ return      {return RETURN; currPos += yyleng;}
 
 
 
-{DIGIT}+    {yylval.num_val = atoi(yytext); currPos += yyleng; return NUMBER}
-{ID}        {printf("IDENT %s\n", yytext);  currPos+= yyleng;}
-{CHAR}      {printf("IDENT %s\n", yytext);  currPos+= yyleng;} /* for chars */
+{DIGIT}+    {yylval.num_val = atoi(yytext); currPos += yyleng; return NUMBER;}
+{ID}        {yylval.id_val = strdup(yytext);  currPos+= yyleng; return IDENT;}
+{CHAR}      {yylval.id_val = strdup(yytext);  currPos+= yyleng; return IDENT;} /* for chars, maybe put these both as a single */
 
 ";"         {return SEMICOLON; currPos += yyleng; }
 ":"         {return COLON; currPos += yyleng; }

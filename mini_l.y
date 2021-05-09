@@ -1,4 +1,4 @@
-bool_expr%{
+%{
 #include <stdio.h>
 #include <stdlib.h>
 void yyerror(const char *msg);
@@ -21,7 +21,7 @@ L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN ENUM
 
 
 %token <id_val> IDENT
-%type <num_val> NUMBER
+%token <num_val> NUMBER
 
 %right ASSIGN
 %left OR
@@ -30,7 +30,7 @@ L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN ENUM
 %left LT LTE GT GTE EQ NEQ
 %left ADD SUB
 %left MULT DIV MOD
-%right SUB
+/* %right SUB */
 %left L_SQUARE_BRACKET R_SQUARE_BRACKET
 %left L_PAREN R_PAREN
 
