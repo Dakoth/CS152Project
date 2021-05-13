@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 void yyerror(const char *msg);
-extern int currLine;
+extern int curLine;
 extern int currPos;
 FILE *yyin;
 %}
@@ -30,10 +30,10 @@ L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN ENUM
 %left LT LTE GT GTE EQ NEQ
 %left ADD SUB
 %left MULT DIV MOD
-/* %right SUB */
+/* %right SUB 
 %left L_SQUARE_BRACKET R_SQUARE_BRACKET
 %left L_PAREN R_PAREN
-
+*/
 
 %%
 
@@ -170,6 +170,7 @@ term:
 
 %%
 
+
 int main(int argc, char** argv){
         if(argc>=2)
         {
@@ -182,11 +183,17 @@ int main(int argc, char** argv){
         {
         yyin=stdin;
         }
+        /*
         yylex();
+        */
+        yyparse();
         return 0;
 
 }
 
+
 void yyerror(const char *msg) {
-    
+    extern int curLine;
+    extern int currPos;
+    printf("error: %s in line %d, column %d\n", msg, curLine, currPos);
 }
