@@ -87,6 +87,7 @@ return      {return RETURN; currPos += yyleng;}
 . {printf("Error at line %d, column  %d; unrecognized symbol \"%s\"\n",curLine, currPos, yytext); exit(0);}
 %%
 
+/*
 int main(int argc, char** argv){
         if(argc>=2)
         {
@@ -103,4 +104,5 @@ int main(int argc, char** argv){
         return 0;
 
 }
+*/
 

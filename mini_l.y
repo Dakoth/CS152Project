@@ -167,3 +167,26 @@ term:
             | SUB L_PAREN expression R_PAREN {printf("term -> negative (expression)\n");}
             | IDENT L_PAREN expressions R_PAREN {printf("term -> identifier (expressions)\n");}
             ;
+
+%%
+
+int main(int argc, char** argv){
+        if(argc>=2)
+        {
+            yyin=fopen(argv[1], "r");
+            if(yyin==NULL){
+                yyin=stdin;
+            }
+        }
+        else
+        {
+        yyin=stdin;
+        }
+        yylex();
+        return 0;
+
+}
+
+void yyerror(const char *msg) {
+    
+}
