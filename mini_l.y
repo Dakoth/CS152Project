@@ -45,9 +45,9 @@ functions:
             ;
 
 function:
-            FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS
+            FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS
             BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements
-            END_BODY {printf("function ->FUNCTION IDENT SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");}
+            END_BODY {printf("function ->FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");}
             ;
 
 declarations:
@@ -62,9 +62,12 @@ declaration:
             ;
 
 identifiers:
-            IDENT COMMA identifiers {printf("identifiers -> IDENT COMMA identifiers\n");}
-            | IDENT {printf("identifiers -> IDENT\n");}
+            ident COMMA identifiers {printf("identifiers -> ident COMMA identifiers\n");}
+            | ident {printf("identifiers -> ident \n");}
             ;
+
+ident:      IDENT {printf("ident -> IDENT %s\n", $1);}
+        ;
 
 statements:
             statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements\n");}
@@ -89,9 +92,11 @@ variables:
             ;
 
 variable:
-            IDENT {printf("variable -> IDENT\n");}
-            | IDENT R_SQUARE_BRACKET expression L_SQUARE_BRACKET {printf("variable -> IDENT R_SQUARE_BRACKET expression L_SQUARE_BRACKET\n");}
+            ident {printf("variable -> ident \n");}
+            | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {printf("variable -> ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET\n");}
             ;
+
+
 
 boolean_expression:
             multiple-relation-and-expression {printf("boolean_expression -> multiple-relation-and-expression\n");}
@@ -165,7 +170,7 @@ term:
             | SUB variable {printf("term -> SUB variable\n");}
             | SUB NUMBER {printf("term -> SUB NUMBER\n");}
             | SUB L_PAREN expression R_PAREN {printf("term -> SUB L_PAREN expression R_PAREN\n");}
-            | IDENT L_PAREN expressions R_PAREN {printf("term -> IDENT L_PAREN expressions R_PAREN\n");}
+            | ident L_PAREN expressions R_PAREN {printf("term -> ident L_PAREN expressions R_PAREN\n");}
             ;
 
 %%
