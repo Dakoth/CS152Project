@@ -10,10 +10,15 @@ int labelCount = 0;
 extern char* yytext; 
 extern int currPos; 
 
-/*
-put all the std stuff here 
-*/
+std::map<std::string, std::string> varTemp;
+std::map<std::string, int> arrSize;
 bool main Func = false; 
+std::set<std::string> funcs;
+std::set<std::string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION", "SEMICOLON", "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", "END_LOCALS", "BEGIN_BODY,
+    "END_BODY", "BEGINLOOP", "ENDLOOP", "COLON", "INTEGER", "COMMA", "ARRAY", "L_SQUARE_BRACKET", "R_SQUARE_BRACKET", "L_PAREN" "R_PAREN", "IF", "ELSE", "THEN", 
+    "CONTINUE", "ENDIF", "OF", "READ", "WRITE", "DO", "WHILE", "FOR", "TRUE", "FALSE", "ASSIGN", "EQ", "NEQ", "LT", "LTE", "GT", "GTE", "ADD", "SUB", "MULT", "DIV",
+    "MOD", "AND", "OR", "NOT", "Function", "Declarations", "Vars", "Var", "Expressions", "Expression", "Idents", "Ident", "Bool-Expr",
+    "Relation-And-Expr", "Relation-Expr-Inv", "Relation-Expr", "Comp", "Multiplicative-Expr", "Term", "Statements", "Statement"};
 
 
 void yyerror(const char *s);
@@ -138,9 +143,53 @@ Declarations: Declaration SEMICOLON Declarations
     }
     ;
 
-declaration:
-            identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
-            | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n");}
+Declaration: identifiers COLON INTEGER 
+    {
+        int left = 0;
+        int right = 0;
+        std::string parse($1.place);
+        std::string temp;
+        bool ex = false;
+        while(!ex) {
+            right = parse.find("|", left);
+            temp.append(". ");
+
+            if (right == std::string::npos) {
+                std::string ident = parse.substr(left, right);
+                if (reserved.find(ident) != reserved.end()) {
+                    printf("Identifier %s's name is a reserved word. \n", ident.c_str());
+                }
+                if (funcs.find(ident) != funcs.end() || varTemp.find(ident) != varTemp.end()) {
+                    printf("Identifier %s is previously declared. \n", ident.c_str());
+                } else {
+                    varTemp[ident] = ident; 
+                    arrSize[ident] = 1;
+                }
+            temp.append(ident);
+            ex = true; 
+        } else {
+            std::string ident = parse.substr(left, right-left);
+            if (reserved.find(ident) != reserved.end()) {
+                printf("Identifier %s's name is a reserved word.\n", ident.c_str());
+            }
+            if (funcs.find(ident) != funcs.end() || varTemp.find(ident) != varTemp.end()) {
+                printf("Identifier %s is previously declared.\n", ident.c_str());
+            } else {
+                varTemp[ident] = ident; 
+                arrSize[ident] = 1;
+            }
+            temp.append(ident);
+            left = right + 1;
+        }
+        temp.append("\n");
+    }
+    $$.code = strdup(temp.c_str());
+    $$place = strdup("");
+    }
+    | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
+    {
+
+    }
             | identifiers COLON ENUM L_PAREN identifiers R_PAREN {printf("declaration -> identifiers COLON ENUM L_PAREN identifiers R_PAREN\n");}
             ;
 
