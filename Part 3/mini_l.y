@@ -1,27 +1,66 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-void yyerror(const char *msg);
+#include <map>
+#include <string.h>
+#include <set> 
+
+int tempCount = 0;
+int labelCount = 0;
+extern char* yytext; 
+extern int currPos; 
+
+/*
+put all the std stuff here 
+*/
+bool main Func = false; 
+
+
+void yyerror(const char *s);
+int yylex();
+std::string new_temp();
+std::string new_label(); 
+
+/*
 extern int curLine;
 extern int currPos;
 FILE *yyin;
+*/
 %}
 
 %union{
-    int num_val;
-    char* id_val;
+    int num;
+    char* ident;
+
+    struct 5 { 
+        char* code; 
+    }   statement;
+    struct E {
+        char* place;
+        char* code;
+        bool arr;
+    }   expression; 
 }
 
+
+/*
 %error-verbose
-%start prog_start
+*/
+%start Program 
+%token <num> NUMBER
+%token <ident> IDENT
+
+%type <expression> Function FuncIdent Declarations Declaration Vars Var Expressions Expressions Idents Id... [FINISH ME]
+%type <expression> Bool-Expr Relation-And-Expr Relation-Expr-Inv Relation-Expr Comp Multiplicative-Express... [FIXME]
+%type <statement> Statements Statement 
+
 %token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS
 BEGIN_BODY END_BODY INTEGER ARRAY OF IF THEN ENDIF ELSE WHILE FOR DO BEGINLOOP
 ENDLOOP CONTINUE READ WRITE TRUE FALSE SEMICOLON COLON COMMA L_PAREN R_PAREN
 L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN ENUM
 
 
-%token <id_val> IDENT
-%token <num_val> NUMBER
+
 
 %right ASSIGN
 %left OR
@@ -37,23 +76,67 @@ L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN ENUM
 
 %%
 
-prog_start: functions { printf("prog_start -> functions\n");}
+Program: %empty 
+    {
+        if (!mainFunc) {
+            printf("No main function declared!\n");
+        }
+    }
+    | Function Program
+    {
+    }
+    ;
 
-functions:
-            /*empty*/{printf("functions -> epsilon\n");}
-            | function functions {printf("functions -> function functions\n");}
-            ;
+Function: FUNCTION FuncIdent SEMICOLON BEGIN_PARAMS Declarations END_PARAMS BEGIN_LOCALS Declarations END_LOCALS BEGIN_BODY Statements END ... [FIXME]
+    { 
+        std::string temp = "func ";
+        temp.append($2.place);
+        temp.append("\n");
+        std::string s = $2.place; 
+        if(s = "main") {
+            mainFunc = true; 
+        }
 
-function:
-            FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS
-            BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements
-            END_BODY {printf("function ->FUNCTION ident SEMICOLON BEGIN_PARAMS declarations END_PARAMS BEGIN_LOCALS declarations END_LOCALS BEGIN_BODY statements END_BODY\n");}
-            ;
+        temp.append($5.code);
+        std::string decs = $5.code; 
+        int decNum = 0; 
+        while(decs.find(".") != std::string::npos) {
+            int pos = decs.find(".");
+            decs.replace(pos, 1, "=");
+            std::string part = ", $" + std::to_string(decNum) + "\n";
+            decNum++;
+            decs.replace(decs.find("\n", pos), 1, part);
+        }
+        temp.append(decs);
 
-declarations:
-            /*empty*/ {printf("declarations -> epsilon\n");}
-            | declaration SEMICOLON declarations {printf("declarations -> declaration SEMICOLON declarations\n");}
-            ;
+        temp.append($8.code);
+        std::string statements = $11.code; 
+
+        if (statements.find("continue") != std::string::npos) {
+            printf("ERROR: Continue outside loop in function %s\n", $2.place);
+        }
+
+        temp.append(statements);
+        temp.append("endfunc\n\n");
+        printf(temp.c_str());
+    }
+    ;
+        
+
+Declarations: Declaration SEMICOLON Declarations 
+    {
+        std::string temp;
+        temp.append($1.code);
+        temp.append($3.code);
+        $$.code = strdup(temp.c_str());
+        $$.place = strdup("");
+    }
+    | %empty 
+    {
+        $$.place = strdup("");
+        $$.code = strdup("");
+    }
+    ;
 
 declaration:
             identifiers COLON INTEGER {printf("declaration -> identifiers COLON INTEGER\n");}
