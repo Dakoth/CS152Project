@@ -92,7 +92,7 @@ Program: %empty
     }
     ;
 
-Function: FUNCTION FuncIdent SEMICOLON BEGIN_PARAMS Declarations END_PARAMS BEGIN_LOCALS Declarations END_LOCALS BEGIN_BODY Statements END ... [FIXME]
+Function: FUNCTION FuncIdent SEMICOLON BEGIN_PARAMS Declarations END_PARAMS BEGIN_LOCALS Declarations END_LOCALS BEGIN_BODY Statements END_BODY
     { 
         std::string temp = "func ";
         temp.append($2.place);
@@ -282,11 +282,41 @@ Idents:     Ident
     ;
 
 
-statements:
-            statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements\n");}
-            | statement SEMICOLON {printf("statements -> statement SEMICOLON\n");}
-            ;
+Statements: Statement SEMICOLON Statements 
+    {
+        std::string temp;
+        temp.append($1.code);
+        temp.append($3.code);
+        $$.code = strdup(temp.c_str());
+    }
+    | Statement SEMICOLON 
+    {
+        $$.code = strdup($1.code);
+    }
+    ;
 
+Statement: Var ASSIGN expression
+    {
+        std::string temp; 
+        temp.append($1.code);
+        temp.append($3.code);
+        std::string middle = $3.place;
+
+        if ($1.arr && $3.arr) {
+            temp += "[]= ";
+        }
+        else if ($1.arr) {
+            temp += "[]= ";
+        }
+        else if ($3.arr) {
+            temp += "[]= ";
+        }
+        else { 
+
+        }
+    }
+
+/*
 statement:
             variable ASSIGN expression {printf("statement -> variable ASSIGN expression\n");}
             | IF boolean_expression THEN statements ENDIF {printf("statement -> IF boolean_expression THEN statements ENDIF\n");}
@@ -298,7 +328,7 @@ statement:
             | CONTINUE {printf("statement -> CONTINUE\n");}
             | RETURN expression {printf("statement -> RETURN expression\n");}
             ;
-
+*/
 variables:
             variable COMMA variables {printf("variables -> variable COMMA variables\n");}
             | variable {printf("variables -> variable\n");}
