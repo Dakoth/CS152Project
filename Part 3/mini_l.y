@@ -186,20 +186,101 @@ Declaration: identifiers COLON INTEGER
     $$.code = strdup(temp.c_str());
     $$place = strdup("");
     }
-    | identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
+    | Idents COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
     {
+        size_t left = 0;
+        size_t right = 0;
+        std::string parse($1.place);
+        std::string temp; 
+        bool ex = false; 
+        while(!ex) {
+            right = parse.find("|", left);
+            temp.append(".[] ");
 
+            if (right == std::string::npos) { 
+                std::string ident = parse.substr(left, right);
+                if (reserved.find(ident) != reserved.end()) {
+                    printf("Identifier %s's name is a reserved word. \n", ident.c_str());
+                }
+                if (funcs.find(ident) != funcs.end() || varTemp.find(ident) != varTemp.end()) {
+                    printf("Identifier %s is previously declared. \n", ident.c_str());
+                } else {
+                    if ($5 <= 0) {
+                        printf("Declaring array ident %s of size <= 0.\n", ident.c_str());
+                    }
+                    varTemp[ident] = ident;
+                    arrSize[ident] = $5;
+                }
+                temp.append(ident);
+                ex = true;
+            } else {
+                std::string ident = parse.substr(left, right-left);
+                if (reserved.find(ident) != reserved.end()) {
+                    printf("Identifier %s's name is a reserved word. \n", ident.c_str());
+                }
+                if (funcs.find(ident) != funcs.end() || varTemp.find(ident) != varTemp.end()) {
+                    printf("Identifier %s is previously declared. \n", ident.c_str());
+                } else {
+                    if ($5 <= 0) {
+                        printf("Declaring array ident %s of size <= 0.\n", ident.c_str());
+                    }
+                    varTemp[ident] = ident;
+                    arrSize[ident] = $5;
+                }
+                temp.append(ident);
+                left = right + 1; 
+            }
+            temp.append(", ");
+            temp.append(std::to_string($5));
+            temp.append("\n");   
+        }
+        $$.code = strdup(temp.c_str());
+        $$.place = strdup("");   
     }
+    ;
+    /*
             | identifiers COLON ENUM L_PAREN identifiers R_PAREN {printf("declaration -> identifiers COLON ENUM L_PAREN identifiers R_PAREN\n");}
-            ;
+    
+     ENUM IS EXTRA CREDIT 
+     */
+    
 
-identifiers:
-            ident COMMA identifiers {printf("identifiers -> ident COMMA identifiers\n");}
-            | ident {printf("identifiers -> ident \n");}
-            ;
+FuncIdent: IDENT 
+    {
+        if (funcs.find($1) != funcs.end()) {
+            printf("function name %s already declared.\n", $1);
+        }
+        else {
+            funcs.insert($1);
+        }
+    $$.place = strdup($1);
+    $$.code = strdup(""); 
+    }
 
-ident:      IDENT {printf("ident -> IDENT %s\n", $1);}
-        ;
+Ident:      IDENT 
+    {
+        $$.place = strdup($1); 
+        $$.code = strdup();
+    }
+    ;
+
+
+Idents:     Ident 
+    {
+        $$.place = strdup($1.place);
+        $$code = strdup("");
+    }
+    | Ident COMMA Idents 
+    {
+        std::string temp;
+        temp.append($1.place);
+        temp.append("|");
+        temp.append($3.place);
+        $$.place = strdup(temp.c_str());
+        $$.code = strdup("");
+    }
+    ;
+
 
 statements:
             statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements\n");}
