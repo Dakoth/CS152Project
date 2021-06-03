@@ -349,7 +349,7 @@ Statement: Var ASSIGN expression
         tmep = temp + ": " + after + "\n";
         $$.code = strdup(temp.c_str());
     }
-    |  WHILE Bool-Expr BEGINLOOP Statements ENDLOOP [2:10:51] 
+    |  WHILE Bool-Expr BEGINLOOP Statements ENDLOOP 
     {
         std::string temp; 
         std::string begin = new_label();
@@ -377,7 +377,7 @@ Statement: Var ASSIGN expression
 
         $$.code = strdup(temp.c_str());
     }
-    | DO BEGINLOOP Statements ENDLOOP WHILE Bool-Expr [2:10:51] 
+    | DO BEGINLOOP Statements ENDLOOP WHILE Bool-Expr 
     {
         std::string temp;
         std::string begin = new_label();
@@ -399,7 +399,7 @@ Statement: Var ASSIGN expression
         $$.code = strdup(temp.c_str()); 
     }
     | FOR Var ASSIGN NUMBER SEMICOLON Bool-Expr SEMICOLON Var ASSIGN Expression BEGINLOOP Statements ENDLOOP 
-    {       [2:10:52] 
+    {       
         std::string temp; 
         std::string dst = new_temp();
         std::string condition = new_label();
@@ -453,7 +453,7 @@ Statement: Var ASSIGN expression
         temp += ": " + after + "\n";
         $$.code = strdup(temp.c_str());
     }
-    | READ Vars [2:24:15] [2:41:22]
+    | READ Vars 
     {
         std::string temp; 
         temp.append($2.code);
@@ -627,12 +627,28 @@ Relation-And-Expr: Relation-Expr-Inv AND Relation-And-Expr
     }
     ;
 
-Relation-Expr-Inv: NOT Relation-Expr-Inv [FIXME]
+Relation-Expr-Inv: NOT Relation-Expr-Inv //[FIXME]
     { 
+        /*
         std::string temp; 
         std::string dst = new_temp();
         temp += ". " 
         temp.append($2.code);
+        */
+
+        //Probably right?
+        std::string temp;
+        std::string dst = new_temp();
+        temp.append($2.code);
+        
+        temp += ". " + dst + "\n";
+        temp += "! " + dst + ", ";
+        temp.append($2.place);
+        temp.append("\n");
+
+        $$.code = strdup(temp.c_str());
+        $$.place = strdup(dst.c_str()); 
+
     }
     | Relation-Expr 
     {
@@ -873,7 +889,7 @@ term:
             ;
 */
 
-Term: Var [2:24:12]
+Term: Var 
     {
         std::string dst = new_temp();
         std::string temp;
