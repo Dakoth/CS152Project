@@ -3,7 +3,10 @@
 */
 
 %{
+    /*
     #include "y.tab.h"
+    */
+    #include "mini_l.tab.h"
     int curLine=1, currPos=0;
 %}
 
@@ -63,9 +66,9 @@ return      {return RETURN; currPos += yyleng;}
 
 
 
-{DIGIT}+    {yylval.num_val = atoi(yytext); currPos += yyleng; return NUMBER;}
-{ID}        {yylval.id_val = strdup(yytext);  currPos+= yyleng; return IDENT;}
-{CHAR}      {yylval.id_val = strdup(yytext);  currPos+= yyleng; return IDENT;} /* for chars, maybe put these both as a single */
+{DIGIT}+    {yylval.num = atoi(yytext); currPos += yyleng; return NUMBER;}
+{ID}        {yylval.ident = strdup(yytext);  currPos+= yyleng; return IDENT;}
+{CHAR}      {yylval.ident = strdup(yytext);  currPos+= yyleng; return IDENT;} /* for chars, maybe put these both as a single */
 
 ";"         {return SEMICOLON; currPos += yyleng; }
 ":"         {return COLON; currPos += yyleng; }

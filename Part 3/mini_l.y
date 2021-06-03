@@ -12,9 +12,9 @@ extern int currPos;
 
 std::map<std::string, std::string> varTemp;
 std::map<std::string, int> arrSize;
-bool main Func = false; 
+bool mainFunc = false; 
 std::set<std::string> funcs;
-std::set<std::string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION", "SEMICOLON", "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", "END_LOCALS", "BEGIN_BODY,
+std::set<std::string> reserved {"NUMBER", "IDENT", "RETURN", "FUNCTION", "SEMICOLON", "BEGIN_PARAMS", "END_PARAMS", "BEGIN_LOCALS", "END_LOCALS", "BEGIN_BODY",
     "END_BODY", "BEGINLOOP", "ENDLOOP", "COLON", "INTEGER", "COMMA", "ARRAY", "L_SQUARE_BRACKET", "R_SQUARE_BRACKET", "L_PAREN" "R_PAREN", "IF", "ELSE", "THEN", 
     "CONTINUE", "ENDIF", "OF", "READ", "WRITE", "DO", "WHILE", "FOR", "TRUE", "FALSE", "ASSIGN", "EQ", "NEQ", "LT", "LTE", "GT", "GTE", "ADD", "SUB", "MULT", "DIV",
     "MOD", "AND", "OR", "NOT", "Function", "Declarations", "Vars", "Var", "Expressions", "Expression", "Idents", "Ident", "Bool-Expr",
@@ -37,7 +37,7 @@ FILE *yyin;
     int num;
     char* ident;
 
-    struct 5 { 
+    struct S { 
         char* code; 
     }   statement;
     struct E {
@@ -55,7 +55,7 @@ FILE *yyin;
 %token <num> NUMBER
 %token <ident> IDENT
 
-%type <expression> Function FuncIdent Declarations Declaration Vars Var Expressions Expressions Idents Ident
+%type <expression> Function FuncIdent Declarations Declaration Vars Var Expressions Expression Idents Ident
 %type <expression> Bool-Expr Relation-And-Expr Relation-Expr-Inv Relation-Expr Comp Multiplicative-Expr Term 
 %type <statement> Statements Statement 
 
@@ -98,7 +98,7 @@ Function: FUNCTION FuncIdent SEMICOLON BEGIN_PARAMS Declarations END_PARAMS BEGI
         temp.append($2.place);
         temp.append("\n");
         std::string s = $2.place; 
-        if(s = "main") {
+        if(s == "main") {
             mainFunc = true; 
         }
 
@@ -143,7 +143,7 @@ Declarations: Declaration SEMICOLON Declarations
     }
     ;
 
-Declaration: identifiers COLON INTEGER 
+Declaration: Idents COLON INTEGER 
     {
         int left = 0;
         int right = 0;
@@ -184,7 +184,7 @@ Declaration: identifiers COLON INTEGER
         temp.append("\n");
     }
     $$.code = strdup(temp.c_str());
-    $$place = strdup("");
+    $$.place = strdup("");
     }
     | Idents COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER 
     {
@@ -260,7 +260,7 @@ FuncIdent: IDENT
 Ident:      IDENT 
     {
         $$.place = strdup($1); 
-        $$.code = strdup();
+        $$.code = strdup("");
     }
     ;
 
@@ -268,7 +268,7 @@ Ident:      IDENT
 Idents:     Ident 
     {
         $$.place = strdup($1.place);
-        $$code = strdup("");
+        $$.code = strdup("");
     }
     | Ident COMMA Idents 
     {
@@ -297,7 +297,7 @@ Statements: Statement SEMICOLON Statements
     }
     ;
 
-Statement: Var ASSIGN expression
+Statement: Var ASSIGN Expression
     {
         std::string temp; 
         temp.append($1.code);
@@ -346,7 +346,7 @@ Statement: Var ASSIGN expression
         temp = temp + ":= " + after + "\n"; //prevents else code from running "if" code 
         temp = temp + ": " + ifS + "\n";
         temp.append($4.code); //Reached from :ifS jump, if's code 
-        tmep = temp + ": " + after + "\n";
+        temp = temp + ": " + after + "\n";
         $$.code = strdup(temp.c_str());
     }
     |  WHILE Bool-Expr BEGINLOOP Statements ENDLOOP 
@@ -370,10 +370,10 @@ Statement: Var ASSIGN expression
         temp.append($2.place);
         temp.append("\n");
         temp += ":= " + after + "\n"; //if here, go past while loop 
-        temp += ": " + inner + "\n" //start of code 
+        temp += ": " + inner + "\n"; //start of code 
         temp.append(code);
         temp += ":= " + begin + "\n"; //here by completing code, return to start of while loop
-        tmep += ": " + after + "\n"; //end of while loop 
+        temp += ": " + after + "\n"; //end of while loop 
 
         $$.code = strdup(temp.c_str());
     }
@@ -629,14 +629,6 @@ Relation-And-Expr: Relation-Expr-Inv AND Relation-And-Expr
 
 Relation-Expr-Inv: NOT Relation-Expr-Inv //[FIXME]
     { 
-        /*
-        std::string temp; 
-        std::string dst = new_temp();
-        temp += ". " 
-        temp.append($2.code);
-        */
-
-        //Probably right?
         std::string temp;
         std::string dst = new_temp();
         temp.append($2.code);
@@ -721,18 +713,6 @@ Comp: EQ
     }
     ;
 
-/*
-expressions:
-            /*empty*/ {printf("expressions -> epsilon\n");}
-            | expression COMMA expressions {printf("expressions -> expression COMMA expressions\n");}
-            | expression {printf("expressions -> expression\n");}
-            ;
-
-expression:
-            multiplicative_expression multiplicative_expressions {printf("expression -> multiplicative_expression multiplicative_expressions\n");}
-            ;
-*/
-
 Expressions: Expression COMMA Expressions
     {
         std::string temp; 
@@ -793,24 +773,11 @@ Expression: Multiplicative-Expr ADD Expression
     }
     ;
 
-/*
-multiplicative_expressions:
-            /*empty*/ {printf("multiplicative_expressions -> epsilon\n");}
-            | ADD multiplicative_expression multiplicative_expressions {printf("multiplicative_expressions -> ADD multiplicative_expression multiplicative_expressions\n");}
-            | SUB multiplicative_expression multiplicative_expressions {printf("multiplicative_expressions -> SUB multiplicative_expression multiplicative_expressions\n");}
-            ;
-
-multiplicative_expression:
-            term terms {printf("multiplicative_expression -> term terms\n");}
-            ;
-*/
-
-
 
 Multiplicative-Expr: Term MULT Multiplicative-Expr
     {
         std::string temp;
-        std::sstring dst = new_temp();
+        std::string dst = new_temp();
         temp.append($1.code);
         temp.append($3.code);
         temp.append(". ");
@@ -828,7 +795,7 @@ Multiplicative-Expr: Term MULT Multiplicative-Expr
     | Term DIV Multiplicative-Expr 
     {
         std::string temp; 
-        std::string dst = new temp();
+        std::string dst = new_temp();
         temp.append($1.code);
         temp.append($3.code);
         temp.append(". ");
@@ -846,7 +813,7 @@ Multiplicative-Expr: Term MULT Multiplicative-Expr
     | Term MOD Multiplicative-Expr 
     {
         std::string temp; 
-        std::string dst = new temp();
+        std::string dst = new_temp();
         temp.append($1.code);
         temp.append($3.code);
         temp.append(". ");
@@ -867,27 +834,6 @@ Multiplicative-Expr: Term MULT Multiplicative-Expr
         $$.place = strdup($1.place);
     }
     ;
-
-
-/*
-terms:
-            /*empty*/ {printf("terms -> epsilon\n");}
-            | MULT term terms {printf("terms -> MULT term terms\n");}
-            | DIV term terms {printf("terms -> DIV term terms\n");}
-            | MOD term terms {printf("terms -> MOD term terms\n");}
-            ;
-
-
-term:
-            variable {printf("term -> variable\n");}
-            | NUMBER {printf("term -> NUMBER\n");}
-            | L_PAREN expression R_PAREN {printf("term -> L_PAREN expression R_PAREN\n");}
-            | SUB variable {printf("term -> SUB variable\n");}
-            | SUB NUMBER {printf("term -> SUB NUMBER\n");}
-            | SUB L_PAREN expression R_PAREN {printf("term -> SUB L_PAREN expression R_PAREN\n");}
-            | ident L_PAREN expressions R_PAREN {printf("term -> ident L_PAREN expressions R_PAREN\n");}
-            ;
-*/
 
 Term: Var 
     {
@@ -1020,22 +966,39 @@ int main(int argc, char** argv){
         {
         yyin=stdin;
         }
-        /*
+        
         yylex();
-        */
+        
         yyparse();
         return 0;
 
 }
 */
 
+int yyparse();
+int yylex();
 
+int main (int argc, char** argv) {
+    yyparse();
+    return 0;
+}
+
+
+/*
 void yyerror(const char *msg) {
     extern int curLine;
     extern int currPos;
     printf("error: %s in line %d, column %d\n", msg, curLine, currPos);
 }
+*/
 
+void yyerror(const char *s) {
+    extern int yylineno; 
+    extern char *yytext; 
+
+    printf("%s on line %d at char %d at symbol \"%s\"\n", s, yylineno, currPos, yytext);
+    exit(1);
+}
 
 std::string new_temp() {
     std::string t = "t" + std::to_string(tempCount);
