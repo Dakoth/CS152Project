@@ -282,8 +282,6 @@ Idents:     Ident
     ;
 
 
-///////////////////////////////////////////////
-
 Statements: Statement SEMICOLON Statements 
     {
         std::string temp;
@@ -509,8 +507,6 @@ statement:
             ;
 */
 
-
-
 Bool-Expr: Relation-And-Expr OR Bool-Expr  
     {
         std::string temp;
@@ -518,7 +514,7 @@ Bool-Expr: Relation-And-Expr OR Bool-Expr
         temp.append($1.code);
         temp.append($3.code);
         temp += ". " + dst + "\n";
-        temp += "||" + dst + ", ";
+        temp += "|| " + dst + ", ";
         temp.append($1.place);          
         temp.append(", ");
         temp.append($3.place);
@@ -971,7 +967,6 @@ int main(int argc, char** argv){
         
         yyparse();
         return 0;
-
 }
 */
 

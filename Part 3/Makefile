@@ -7,8 +7,8 @@ phase3: mini_l.lex mini_l.y
 	rm -f lex.yy.c *.output *.tab.c *.tab.h 
 
 test: 
-	cat primes.min | ./phase3 > ./mil/primes.mil 
-	cat mytest.min | ./phase3 > ./mil/mytest.mil 
-	cat fibonacci.min | ./phase3 > ./mil/fibonacci.mil
-	cat errors.min | ./phase3 > ./mil/errors.mil 
-	cat for.min | ./phase3 > ./mil/for.mil
+	cat primes.min | phase3 > primes.mil 
+	cat mytest.min | phase3 > mytest.mil 
+	cat fibonacci.min | phase3 > fibonacci.mil
+	cat errors.min | phase3 > errors.mil 
+	cat for.min | phase3 > for.mil
