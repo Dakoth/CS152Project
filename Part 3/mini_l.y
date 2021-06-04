@@ -1,3 +1,6 @@
+/*
+    By Alfredo Gonzalez and Tommy Chhur 
+*/
 %{
 #include <stdio.h>
 #include <stdlib.h>
@@ -491,22 +494,6 @@ Statement: Var ASSIGN Expression
     } 
     ;
     
-
-
-/*
-statement:
-            variable ASSIGN expression {printf("statement -> variable ASSIGN expression\n");}
-            | IF boolean_expression THEN statements ENDIF {printf("statement -> IF boolean_expression THEN statements ENDIF\n");}
-            | IF boolean_expression THEN statements ELSE statements ENDIF {printf("statement -> IF boolean_expression THEN statements ELSE statements ENDIF\n");}
-            | WHILE boolean_expression BEGINLOOP statements ENDLOOP {printf("statement -> WHILE boolean_expression BEGINLOOP statements ENDLOOP\n");}
-            | DO BEGINLOOP statements ENDLOOP WHILE boolean_expression {printf("statement -> DO BEGINLOOP statements ENDLOOP WHILE boolean_expression\n");}
-            | READ variables {printf("statement -> READ variables\n");}
-            | WRITE variables {printf("statement -> WRITE variables\n");}
-            | CONTINUE {printf("statement -> CONTINUE\n");}
-            | RETURN expression {printf("statement -> RETURN expression\n");}
-            ;
-*/
-
 Bool-Expr: Relation-And-Expr OR Bool-Expr  
     {
         std::string temp;
@@ -623,7 +610,7 @@ Relation-And-Expr: Relation-Expr-Inv AND Relation-And-Expr
     }
     ;
 
-Relation-Expr-Inv: NOT Relation-Expr-Inv //[FIXME]
+Relation-Expr-Inv: NOT Relation-Expr-Inv
     { 
         std::string temp;
         std::string dst = new_temp();
@@ -949,27 +936,6 @@ Term: Var
 
 %%
 
-/*
-int main(int argc, char** argv){
-        if(argc>=2)
-        {
-            yyin=fopen(argv[1], "r");
-            if(yyin==NULL){
-                yyin=stdin;
-            }
-        }
-        else
-        {
-        yyin=stdin;
-        }
-        
-        yylex();
-        
-        yyparse();
-        return 0;
-}
-*/
-
 int yyparse();
 int yylex();
 
@@ -977,15 +943,6 @@ int main (int argc, char** argv) {
     yyparse();
     return 0;
 }
-
-
-/*
-void yyerror(const char *msg) {
-    extern int curLine;
-    extern int currPos;
-    printf("error: %s in line %d, column %d\n", msg, curLine, currPos);
-}
-*/
 
 void yyerror(const char *s) {
     extern int yylineno; 
